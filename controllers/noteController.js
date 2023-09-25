@@ -1,17 +1,22 @@
 // controllers/noteController.js
 
-const Note = require('../models/note'); // Import the Note model
+const Note = require('../models/note');
 
 // Controller function for creating a new note
 const createNote = async (req, res) => {
   try {
-    // Your code for creating a new note and saving it to the database
+    const { title, content, userId } = req.body;
+
+    // Create a new note and save it to the database
+    const newNote = new Note({ title, content, userId });
+    await newNote.save();
+
+    res.status(201).json({ message: 'Note created successfully' });
   } catch (error) {
-    // Your error handling code
+    console.error('Error creating note:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-// Other controller functions for different note operations go here
 
 module.exports = {
   createNote,
