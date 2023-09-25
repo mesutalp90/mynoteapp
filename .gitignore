@@ -5,7 +5,7 @@ node_modules/
 build/
 dist/
 
-# Environment configuration files
+# .gitignore
 .env
 
 # Editor-specific files and directories
