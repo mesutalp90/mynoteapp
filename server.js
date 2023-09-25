@@ -1,6 +1,29 @@
 require('dotenv').config(); // Load environment variables from .env file
 
+const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const noteRoutes = require('./routes/notes'); // Import the notes route
+
+const app = express();
+
+// ...
+
+// Use CORS middleware
+app.use(cors());
+
+// ...
+
+// Use the notes route
+app.use('/api/notes', noteRoutes);
+
+// ...
+
+// Start your server
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 // Use the environment variable in your connection string
 const connectionString = process.env.MONGODB_URI;
