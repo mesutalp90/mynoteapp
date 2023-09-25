@@ -1,64 +1,46 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import Axios for making HTTP requests
+import NoteForm from './components/NoteForm';
+import NoteList from './components/NoteList';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      notes: [],
-      newNote: '',
-    };
-  }
+const App = () => {
+  const [notes, setNotes] = useState([]);
+  
+  useEffect(() => {
+    // Fetch notes from your server when the component mounts
+    fetchNotes();
+  }, []);
 
-  // Function to handle input changes when creating a new note
-  handleInputChange = (event) => {
-    this.setState({ newNote: event.target.value });
-  };
-
-  // Function to add a new note to the list
-  addNote = () => {
-    if (this.state.newNote.trim() === '') {
-      return; // Prevent adding empty notes
+  const fetchNotes = async () => {
+    try {
+      const response = await axios.get('/api/notes'); // Replace with your actual API endpoint
+      setNotes(response.data); // Update the notes state with the fetched data
+    } catch (error) {
+      console.error('Error fetching notes:', error);
     }
-
-    const newNotes = [...this.state.notes, this.state.newNote];
-    this.setState({ notes: newNotes, newNote: '' });
   };
 
-  // Function to delete a note by index
-  deleteNote = (index) => {
-    const newNotes = [...this.state.notes];
-    newNotes.splice(index, 1);
-    this.setState({ notes: newNotes });
+  const createNote = async (title, content) => {
+    try {
+      const response = await axios.post('/api/notes/create', {
+        title,
+        content,
+        userId: 'yourUserId', // Replace with the actual user ID
+      });
+      console.log(response.data.message); // Check the server's response
+      fetchNotes(); // Refresh the list of notes after creating a new one
+    } catch (error) {
+      console.error('Error creating note:', error);
+    }
   };
 
-  render() {
-    return (
-      <div className="App">
-        <header>
-          <h1>My Note-Taking App</h1>
-        </header>
-        <main>
-          <div className="note-input">
-            <input
-              type="text"
-              placeholder="Enter your note"
-              value={this.state.newNote}
-              onChange={this.handleInputChange}
-            />
-            <button onClick={this.addNote}>Add Note</button>
-          </div>
-          <ul className="note-list">
-            {this.state.notes.map((note, index) => (
-              <li key={index}>
-                {note}
-                <button onClick={() => this.deleteNote(index)}>Delete</button>
-              </li>
-            ))}
-          </ul>
-        </main>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h1>My Note App</h1>
+      <NoteForm createNote={createNote} />
+      <NoteList notes={notes} />
+    </div>
+  );
+};
 
 export default App;
